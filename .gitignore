@@ -1,0 +1,50 @@
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.pyc
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# My specific folders and files#
+Data_Pre_Processing/cedars-224/masks*/
+Data_Pre_Processing/cedars-224/tiles*/
+Data_Pre_Processing/cedars-224/prediction/
+Data_Pre_Processing/cedars-224/
+Mask_RCNN/logs
+*.icloud
+*.ipynb_checkpoints/
+Mask_RCNN/__pycache__/
+Data_Pre_Processing/__pycache__/
+*.h5
