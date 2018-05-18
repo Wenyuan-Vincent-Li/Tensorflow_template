@@ -38,13 +38,11 @@ ehthumbs.db
 Thumbs.db
 
 # My specific folders and files#
-Data_Pre_Processing/cedars-224/masks*/
-Data_Pre_Processing/cedars-224/tiles*/
-Data_Pre_Processing/cedars-224/prediction/
-Data_Pre_Processing/cedars-224/
-Mask_RCNN/logs
+Dataset/Images/
+Dataset/Labels/
+Dataset/Tfrecord/
+Test*
+__pycache__
 *.icloud
 *.ipynb_checkpoints/
-Mask_RCNN/__pycache__/
-Data_Pre_Processing/__pycache__/
 *.h5
