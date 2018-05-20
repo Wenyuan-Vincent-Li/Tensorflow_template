@@ -29,7 +29,7 @@ class Config(object):
     # experiment is running.
     NAME = None  # Override in sub-classes
     
-    BATCH_SIZE = 3
+    BATCH_SIZE = 5
     EPOCHS = 40
     
 
@@ -41,6 +41,8 @@ class Config(object):
     # Adjust based on your GPU memory and image sizes. Use the highest
     # number that your GPU can handle for best performance.
     IMAGES_PER_GPU = 1
+    
+    DATA_FORMAT = "channels_last"
 
     # Number of training steps per epoch
     # This doesn't need to match the size of the training set. Tensorboard
@@ -61,7 +63,7 @@ class Config(object):
     BACKBONE_STRIDES = [4, 8, 16, 32, 64]
 
     # Number of classification classes (including background)
-    NUM_CLASSES = 1  # Override in sub-classes
+    NUM_CLASSES = 4  # Override in sub-classes
 
     # Length of square anchor side in pixels
     RPN_ANCHOR_SCALES = (32, 64, 128, 256, 512)
@@ -150,6 +152,14 @@ class Config(object):
     # the RPN. For example, to debug the classifier head without having to
     # train the RPN.
     USE_RPN_ROIS = True
+    
+    # Network Property
+    BATCH_NORM_DECAY = 0.999
+    BATCH_NORM_EPSILON = 0.001
+    
+    # Training Property
+    LEARNING_RATE = 0.001
+    MOMENTUM = 0.8
     
 
     def __init__(self):
