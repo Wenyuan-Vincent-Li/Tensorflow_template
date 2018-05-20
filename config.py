@@ -30,7 +30,7 @@ class Config(object):
     NAME = None  # Override in sub-classes
     
     BATCH_SIZE = 5
-    EPOCHS = 40
+    
     
 
     # NUMBER OF GPUs to use. For CPU training, use 1
@@ -93,9 +93,7 @@ class Config(object):
     USE_MINI_MASK = True
     MINI_MASK_SHAPE = (56, 56)  # (height, width) of the mini-mask
 
-    # Input image reszing
-    IMAGE_HEIGHT = 1024
-    IMAGE_WIDTH = 1024
+
     # If True, pad images with zeros such that they're (max_dim by max_dim)
     IMAGE_PADDING = True  # currently, the False option is not supported
 
@@ -140,8 +138,8 @@ class Config(object):
     # The Mask RCNN paper uses lr=0.02, but on TensorFlow it causes
     # weights to explode. Likely due to differences in optimzer
     # implementation.
-    LEARNING_RATE = 0.001
-    LEARNING_MOMENTUM = 0.9
+#    LEARNING_RATE = 0.001
+#    LEARNING_MOMENTUM = 0.9
 
     # Weight decay regularization
     WEIGHT_DECAY = 0.0001
@@ -158,9 +156,15 @@ class Config(object):
     BATCH_NORM_EPSILON = 0.001
     
     # Training Property
-    LEARNING_RATE = 0.001
-    MOMENTUM = 0.8
+    EPOCHS = 20
+    LEARNING_RATE = 0.0000001
+    MOMENTUM = 0.5
     
+    # Input Pipeline
+    DATA_DIR = "" # rewrite this as dataset directory.
+    # Input image reszing
+    IMAGE_HEIGHT = 256
+    IMAGE_WIDTH = 256
 
     def __init__(self):
         """Set values of computed attributes."""

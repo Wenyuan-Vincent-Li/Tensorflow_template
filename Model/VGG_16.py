@@ -5,9 +5,10 @@ Created on Sat May 19 14:22:58 2018
 
 @author: wenyuan
 """
-
+import sys
+import os
+sys.path.append(os.path.dirname(os.getcwd()))
 import tensorflow as tf
-
 from Model import model_base
 
 class VGG16(model_base.CNN_Base):
@@ -23,62 +24,67 @@ class VGG16(model_base.CNN_Base):
         with tf.name_scope('Conv_Block_0'):
             x = self._conv_batch_relu(x, filters = self._filters[0], \
                                   kernel_size = 3, strides = (1,1))
-            x = self._conv_batch_relu(x, filters = self._filters[0], \
-                                  kernel_size = 3, strides = (1,1))
+#            x = self._conv_batch_relu(x, filters = self._filters[0], \
+#                                  kernel_size = 3, strides = (1,1))
             x = self._max_pool(x, pool_size = 2)
         
-        with tf.name_scope('Conv_Block_1'):
-            x = self._conv_batch_relu(x, filters = self._filters[1], \
-                                  kernel_size = 3, strides = (1,1))
-            x = self._conv_batch_relu(x, filters = self._filters[1], \
-                                  kernel_size = 3, strides = (1,1))
-            x = self._max_pool(x, pool_size = 2)
-        
-        with tf.name_scope('Conv_Block_2'):
-            x = self._conv_batch_relu(x, filters = self._filters[2], \
-                                  kernel_size = 3, strides = (1,1))
-            x = self._conv_batch_relu(x, filters = self._filters[2], \
-                                  kernel_size = 3, strides = (1,1))
-            x = self._conv_batch_relu(x, filters = self._filters[2], \
-                                  kernel_size = 3, strides = (1,1))
-            x = self._max_pool(x, pool_size = 2)
-        
-        with tf.name_scope('Conv_Block_3'):
-            x = self._conv_batch_relu(x, filters = self._filters[3], \
-                                  kernel_size = 3, strides = (1,1))
-            x = self._conv_batch_relu(x, filters = self._filters[3], \
-                                  kernel_size = 3, strides = (1,1))
-            x = self._conv_batch_relu(x, filters = self._filters[3], \
-                                  kernel_size = 3, strides = (1,1))
-            x = self._max_pool(x, pool_size = 2)
-        
-        with tf.name_scope('Conv_Block_4'):
-            x = self._conv_batch_relu(x, filters = self._filters[4], \
-                                  kernel_size = 3, strides = (1,1))
-            x = self._conv_batch_relu(x, filters = self._filters[4], \
-                                  kernel_size = 3, strides = (1,1))
-            x = self._conv_batch_relu(x, filters = self._filters[4], \
-                                  kernel_size = 3, strides = (1,1))
-            x = self._max_pool(x, pool_size = 2)
-        
-        
+#        with tf.name_scope('Conv_Block_1'):
+#            x = self._conv_batch_relu(x, filters = self._filters[1], \
+#                                  kernel_size = 3, strides = (1,1))
+#            x = self._conv_batch_relu(x, filters = self._filters[1], \
+#                                  kernel_size = 3, strides = (1,1))
+#            x = self._max_pool(x, pool_size = 2)
+#        
+#        with tf.name_scope('Conv_Block_2'):
+#            x = self._conv_batch_relu(x, filters = self._filters[2], \
+#                                  kernel_size = 3, strides = (1,1))
+#            x = self._conv_batch_relu(x, filters = self._filters[2], \
+#                                  kernel_size = 3, strides = (1,1))
+#            x = self._conv_batch_relu(x, filters = self._filters[2], \
+#                                  kernel_size = 3, strides = (1,1))
+#            x = self._max_pool(x, pool_size = 2)
+#        
+#        with tf.name_scope('Conv_Block_3'):
+#            x = self._conv_batch_relu(x, filters = self._filters[3], \
+#                                  kernel_size = 3, strides = (1,1))
+#            x = self._conv_batch_relu(x, filters = self._filters[3], \
+#                                  kernel_size = 3, strides = (1,1))
+#            x = self._conv_batch_relu(x, filters = self._filters[3], \
+#                                  kernel_size = 3, strides = (1,1))
+#            x = self._max_pool(x, pool_size = 2)
+#        
+#        with tf.name_scope('Conv_Block_4'):
+#            x = self._conv_batch_relu(x, filters = self._filters[4], \
+#                                  kernel_size = 3, strides = (1,1))
+#            x = self._conv_batch_relu(x, filters = self._filters[4], \
+#                                  kernel_size = 3, strides = (1,1))
+#            x = self._conv_batch_relu(x, filters = self._filters[4], \
+#                                  kernel_size = 3, strides = (1,1))
+#            x = self._max_pool(x, pool_size = 2)
+                
         with tf.name_scope('Fully_Connected'):
             with tf.name_scope('Tensor_Flatten'):
                 x = tf.reshape(x, shape = [self._batch_size, -1])
-            x = self._fully_connected(x, 4096)
-            x = self._fully_connected(x, 4096)
+#            x = self._fully_connected(x, 4096)
+#            x = self._fully_connected(x, 4096)
             x = self._fully_connected(x, self._num_classes)
-            
+        
+#==============================================================================
+# Small dense work for test purpose
+#         with tf.name_scope('Fully_Connected'):
+#             with tf.name_scope('Tensor_Flatten'):
+#                 x = tf.reshape(x, shape = [self._batch_size, -1])
+#             x = self._fully_connected(x, 200)
+#             x = self._fully_connected(x, self._num_classes)
+#==============================================================================
         return x
         
 
 if __name__ == "__main__":
-    import sys
-    import os
-    sys.path.append(os.path.dirname(os.getcwd()))
     from config import Config
     class TestConfig(Config):
         IS_TRAINING = True
+        
     
     config = TestConfig
     

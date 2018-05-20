@@ -12,27 +12,34 @@ class Train_base(object):
         self.learning_rate = learning_rate
         self.momentum = momentum
     
-    def build_train_graph(self):
-        raise NotImplementedError(
-                'loss() is implemented in Model sub classes')
-    
-    def loss(self, target, network_output):
-        raise NotImplementedError(
-                'loss() is implemented in Model sub classes')
-    
-    def metric(self, metrics):
+    def _input_fn(self):
         raise NotImplementedError(
                 'metirc() is implemented in Model sub classes')
     
-    def train_op(self, optimizer, loss):
-        return
+    def _build_train_graph(self):
+        raise NotImplementedError(
+                'loss() is implemented in Model sub classes')
+    
+    def _loss(self, target, network_output):
+        raise NotImplementedError(
+                'loss() is implemented in Model sub classes')
+    
+    def _metric(self, labels, network_output):
+        raise NotImplementedError(
+                'metirc() is implemented in Model sub classes')
+    
+    def _train_op(self, optimizer, loss):
+        train_op = optimizer.minimize(loss, 
+                                      global_step = tf.train.get_global_step())
+        return train_op
         
     def _cross_entropy_loss(self, labels, logits):
         loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels = labels, \
                                                           logits = logits)
+        loss = tf.reduce_mean(loss)
         return loss
     
-    def _SGD_w_Momentum_optimizer(self, loss):
+    def _SGD_w_Momentum_optimizer(self):
         optimizer = tf.train.MomentumOptimizer(learning_rate = self.learning_rate,
                                                momentum = self.momentum)
         return optimizer

@@ -62,14 +62,15 @@ class ProstateDataSet(object):
                                                        self.config.IMAGE_WIDTH)
         image = tf.random_crop(image, [self.config.IMAGE_HEIGHT, \
                                        self.config.IMAGE_WIDTH, 3])
-        image = tf.image.random_brightness(image, max_delta = 0.5)
-        image = tf.image.random_contrast(image, lower = 0, upper = 1)
-        image = tf.image.random_flip_left_right(image)
-        image = tf.image.random_flip_up_down(image)
-        image = tf.image.random_hue(image, max_delta = 0.1)
-        image = tf.image.random_saturation(image, lower = 0, upper = 1)
-        image = tf.image.rot90(image, k = tf.random_uniform(shape = [],\
-                                            maxval = 3, dtype=tf.int32))
+#        image = tf.image.random_brightness(image, max_delta = 0.5)
+#        image = tf.image.random_contrast(image, lower = 0, upper = 1)
+#        image = tf.image.random_flip_left_right(image)
+#        image = tf.image.random_flip_up_down(image)
+#        image = tf.image.random_hue(image, max_delta = 0.1)
+#        image = tf.image.random_saturation(image, lower = 0, upper = 1)
+#        image = tf.image.rot90(image, k = tf.random_uniform(shape = [],\
+#                                            maxval = 3, dtype=tf.int32))
+        label = tf.one_hot(label, depth = self.config.NUM_CLASSES)
         return image, label
     
     def shuffle_and_repeat(self, dataset):
@@ -93,7 +94,7 @@ class ProstateDataSet(object):
         dataset = dataset.prefetch(buffer_size=self.config.BATCH_SIZE)
         return dataset
     
-    def inputpipline(self):
+    def inputpipline_trainset(self):
         # 1 Read in tfrecords
         dataset, filename = self.input_from_tfrecord()
         # 2 Parser tfrecords and preprocessing the data
