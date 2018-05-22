@@ -30,12 +30,17 @@ class ProstateDataSet(object):
         else:
             raise ValueError('Invalid data subset "%s"' % self.subset)
     
-    def input_from_tfrecord(self):
+    def input_from_tfrecord_placeholder(self):
         filename = tf.placeholder(tf.string, shape=[None], \
                                    name = "input_filenames")
         # make filenames as placeholder for training and validating purpose
         dataset = tf.data.TFRecordDataset(filename)
         return dataset, filename
+    
+    def input_from_tfrecord_filename(self):
+        filename = self.get_filenames()
+        dataset = tf.data.TFRecordDataset(filename)
+        return dataset
     
     def parser(self, serialized_example):
         """Parses a single tf.Example into image and label tensors."""
@@ -94,27 +99,52 @@ class ProstateDataSet(object):
         dataset = dataset.prefetch(buffer_size=self.config.BATCH_SIZE)
         return dataset
     
-    def inputpipline_trainset(self):
+    def inputpipline_singleset(self):
         # 1 Read in tfrecords
-        dataset, filename = self.input_from_tfrecord()
+        dataset, filename = self.input_from_tfrecord_placeholder()
         # 2 Parser tfrecords and preprocessing the data
         dataset = dataset.map(self.parser, \
                               num_parallel_calls=self.config.BATCH_SIZE)
         
-        # 4 Shuffle and repeat
+        # 3 Shuffle and repeat
         dataset = self.shuffle_and_repeat(dataset)
-        # 5 Batch it up
+        # 4 Batch it up
         dataset = self.batch(dataset)
-        # 6 Make iterator
+        # 5 Make iterator
         iterator = dataset.make_initializable_iterator()
         image_batch, label_batch = iterator.get_next()
         
         return image_batch, label_batch, filename, iterator
         ## return the input tensor, iterator, placeholder
+    
+    def inputpipline_train_val(self, other):
+        # 1 Read in tfrecords
+        dataset_train = self.input_from_tfrecord_filename()
+        dataset_val = other.input_from_tfrecord_filename()
+        # 2 Parser tfrecords and preprocessing the data
+        dataset_train = dataset_train.map(self.parser, \
+                              num_parallel_calls=self.config.BATCH_SIZE)
+        dataset_val = dataset_val.map(self.parser, \
+                              num_parallel_calls=self.config.BATCH_SIZE)
+        # 3 Shuffle and repeat
+        dataset_train = self.shuffle_and_repeat(dataset_train)        
+        # 4 Batch it up
+        dataset_train = self.batch(dataset_train)
+        dataset_val = self.batch(dataset_val)
+        # 5 Make iterator
+        iterator = tf.data.Iterator.from_structure(dataset_train.output_types,
+                                           dataset_train.output_shapes)
+        image_batch, label_batch = iterator.get_next()
+        init_op_train = iterator.make_initializer(dataset_train)
+        init_op_val = iterator.make_initializer(dataset_val)
+        
+        return image_batch, label_batch, init_op_train, init_op_val
+        
+        
 '''
 Following is testing code
 '''
-def _main_inputpipline():
+def _main_inputpipline_singleset():
     import sys
     sys.path.append(os.path.dirname(os.getcwd()))
     from config import Config
@@ -126,7 +156,7 @@ def _main_inputpipline():
     with tf.device('/cpu:0'):
         dataset = ProstateDataSet(data_dir, tmp_config, \
                                   'train', use_augmentation = True)
-        image_batch, label_batch, filename, iterator = dataset.inputpipline()
+        image_batch, label_batch, filename, iterator = dataset.inputpipline_singleset()
         with tf.Session() as sess:
             sess.run(iterator.initializer, \
                      feed_dict = {filename: [dataset.get_filenames()]})
@@ -139,6 +169,43 @@ def _main_inputpipline():
                     break
     return image_batch_output, label_batch_output
 
+def _main_inputpipline_train_val():
+    import sys
+    sys.path.append(os.path.dirname(os.getcwd()))
+    from config import Config
+    
+    tmp_config = Config()
+    data_dir = os.path.join(os.path.dirname(os.getcwd()), "Dataset")
+    num_dataset = 0
+    tf.reset_default_graph()
+    with tf.device('/cpu:0'):
+        dataset_train = ProstateDataSet(data_dir, tmp_config, \
+                                  'train', use_augmentation = True)
+        dataset_val = ProstateDataSet(data_dir, tmp_config, \
+                                  'val', use_augmentation = False)
+        
+        image_batch, label_batch, init_op_train, init_op_val \
+            = dataset_train.inputpipline_train_val(dataset_val)
+        with tf.Session() as sess:
+            sess.run(init_op_train)
+            while True:
+                try:        
+                    image_batch_output, label_batch_output = \
+                        sess.run([image_batch, label_batch])
+                except tf.errors.OutOfRangeError:
+                    break
+            sess.run(init_op_val)
+            while True:
+                try:        
+                    image_batch_output, label_batch_output = \
+                        sess.run([image_batch, label_batch])
+                    num_dataset += 1
+                except tf.errors.OutOfRangeError:
+                    break
+    return image_batch_output, label_batch_output
+
+
+
 def _display_image(image):
     from PIL import Image
     import numpy as np
@@ -147,8 +214,10 @@ def _display_image(image):
     img.show()
         
 if __name__ == "__main__":
-    image, label = _main_inputpipline()
+    image, label = _main_inputpipline_singleset()
+#    image, label = _main_inputpipline_train_val()
 #    _display_image(image[0, :, : ,:])
+                
 
 #==============================================================================
 # Total dataset 10; Batch size 1; Epochs 1; Run Loop 10;

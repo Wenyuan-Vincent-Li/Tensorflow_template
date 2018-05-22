@@ -29,7 +29,7 @@ class Config(object):
     # experiment is running.
     NAME = None  # Override in sub-classes
     
-    BATCH_SIZE = 5
+    BATCH_SIZE = 1
     
     
 
@@ -156,7 +156,7 @@ class Config(object):
     BATCH_NORM_EPSILON = 0.001
     
     # Training Property
-    EPOCHS = 20
+    EPOCHS = 2
     LEARNING_RATE = 0.0000001
     MOMENTUM = 0.5
     

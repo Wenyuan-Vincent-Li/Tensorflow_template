@@ -7,6 +7,7 @@ Created on Sat May 19 16:32:57 2018
 """
 import sys
 import os
+import numpy as np
 sys.path.append(os.path.dirname(os.getcwd()))
 import tensorflow as tf
 from train_base import Train_base
@@ -19,13 +20,12 @@ class Train(Train_base):
     
     def train(self, model):
         tf.reset_default_graph()
-        image, label, filename_placeholder, iterator, filename \
-            = self._input_fn()
-        image.set_shape([self.config.BATCH_SIZE, \
-                         self.config.IMAGE_HEIGHT, \
-                         self.config.IMAGE_WIDTH, 3])
+        image, label, init_op_train, init_op_val \
+            = self._input_fn_train_val()
+            
         with tf.device('/cpu:0'): #Todo: parameterize
-            loss = self._build_train_graph(image, label, model)
+            loss, accuracy, update_op, reset_op \
+                = self._build_train_graph(image, label, model)
             optimizer = self._SGD_w_Momentum_optimizer()
             train_op = self._train_op(optimizer, loss)
     
@@ -35,8 +35,7 @@ class Train(Train_base):
                          tf.local_variables_initializer())
             sess.run(init_var)
             for epoch in range(self.config.EPOCHS):
-                sess.run(iterator.initializer, \
-                     feed_dict = {filename_placeholder: [filename]})
+                sess.run(init_op_train)
                 while True:
                     try:        
                         _, loss_out = \
@@ -44,31 +43,65 @@ class Train(Train_base):
                         LOSS.append(loss_out)
                     except tf.errors.OutOfRangeError:
                         break
+                ## Perform test on validation
+                sess.run([init_op_val, reset_op])
+                loss_val = []
+                while True:
+                    try:        
+                        loss_out, accuracy_out, _ = \
+                            sess.run([loss, accuracy, update_op])
+                        loss_val.append(loss_out)
+                    except tf.errors.OutOfRangeError:
+                        print("The current loss for epoch {} is {:.2f}, accuracy is {:.2f}."\
+                              .format(epoch, np.mean(loss_val), accuracy_out))
+                        break
         return LOSS
     
-    def _input_fn(self):
+    
+    def _input_fn_single_set(self):
         with tf.device('/cpu:0'):
             with tf.name_scope('Input_Data'):
                 dataset = DataSet(self.config.DATA_DIR, self.config, \
                                           'train', use_augmentation = True)
                 image_batch, label_batch, filename_placeholder, iterator \
-                    = dataset.inputpipline()
+                    = dataset.inputpipline_singleset()
                 filename = dataset.get_filenames()
+                image_batch.set_shape([self.config.BATCH_SIZE, \
+                         self.config.IMAGE_HEIGHT, \
+                         self.config.IMAGE_WIDTH, 3])
         return image_batch, label_batch, \
                filename_placeholder, iterator, filename
+    
+    def _input_fn_train_val(self):
+        with tf.device('/cpu:0'):
+            with tf.name_scope('Input_Data'):
+                dataset_train = DataSet(self.config.DATA_DIR, self.config, \
+                                          'train', use_augmentation = True)
+                dataset_val = DataSet(self.config.DATA_DIR, self.config, \
+                                          'val', use_augmentation = False)
+                image_batch, label_batch, init_op_train, init_op_val \
+                    = dataset_train.inputpipline_train_val(dataset_val)
+                image_batch.set_shape([self.config.BATCH_SIZE, \
+                         self.config.IMAGE_HEIGHT, \
+                         self.config.IMAGE_WIDTH, 3])
+        return image_batch, label_batch, init_op_train, init_op_val
         
     def _build_train_graph(self, x, target, model):
         main_graph = model(self.config)
         y = main_graph.forward_pass(x)
         loss = self._loss(target, y)
-        return loss
+        accuracy, update_op, reset_op = self._metric(target, y)
+        return loss, accuracy, update_op, reset_op
     
     def _metric(self, labels, logits):
-        with tf.name_scope('Metric'):
+        with tf.name_scope('Metric') as scope:
             prediction = tf.argmax(logits, axis = -1)
             labels = tf.argmax(labels, axis = -1)
-            accuracy = self._accuracy_metric(labels, prediction)
-        return accuracy
+            accuracy, update_op = self._accuracy_metric(labels, prediction)
+            vars = tf.contrib.framework.get_variables(
+                 scope, collection=tf.GraphKeys.LOCAL_VARIABLES)
+            reset_op = tf.variables_initializer(vars)
+        return accuracy, update_op, reset_op
     
     def _loss(self, target, network_output):
         with tf.name_scope('Loss'):
