@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+v#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Sat May 19 16:34:59 2018
@@ -32,6 +32,11 @@ class Train_base(object):
         train_op = optimizer.minimize(loss, 
                                       global_step = tf.train.get_global_step())
         return train_op
+    
+    def _train_op_w_grads(self, optimizer, loss):
+        grads = optimizer.compute_gradients(loss)
+        train_op = optimizer.apply_gradients(grads)
+        return train_op, grads
         
     def _cross_entropy_loss(self, labels, logits):
         loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels = labels, \

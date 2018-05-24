@@ -29,7 +29,7 @@ class Config(object):
     # experiment is running.
     NAME = None  # Override in sub-classes
     
-    BATCH_SIZE = 1
+    BATCH_SIZE = 5
     
     
 
@@ -156,8 +156,8 @@ class Config(object):
     BATCH_NORM_EPSILON = 0.001
     
     # Training Property
-    EPOCHS = 2
-    LEARNING_RATE = 0.0000001
+    EPOCHS = 10
+    LEARNING_RATE = 0.001
     MOMENTUM = 0.5
     
     # Input Pipeline
@@ -165,7 +165,18 @@ class Config(object):
     # Input image reszing
     IMAGE_HEIGHT = 256
     IMAGE_WIDTH = 256
-
+    MIN_QUEUE_EXAMPLES = 3
+    
+    # Summary
+    SUMMARY = True
+    SUMMARY_GRAPH = True
+    SUMMARY_SCALAR = True
+    SUMMARY_IMAGE = True
+    SUMMARY_TRAIN_VAL = True
+    SUMMARY_HISTOGRAM = True
+    
+    
+    
     def __init__(self):
         """Set values of computed attributes."""
         self.MIN_QUEUE_EXAMPLES = int(15 * 0.4)

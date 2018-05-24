@@ -28,12 +28,12 @@ class VGG16(model_base.CNN_Base):
 #                                  kernel_size = 3, strides = (1,1))
             x = self._max_pool(x, pool_size = 2)
         
-#        with tf.name_scope('Conv_Block_1'):
+        with tf.name_scope('Conv_Block_1'):
+            x = self._conv_batch_relu(x, filters = self._filters[1], \
+                                  kernel_size = 3, strides = (1,1))
 #            x = self._conv_batch_relu(x, filters = self._filters[1], \
 #                                  kernel_size = 3, strides = (1,1))
-#            x = self._conv_batch_relu(x, filters = self._filters[1], \
-#                                  kernel_size = 3, strides = (1,1))
-#            x = self._max_pool(x, pool_size = 2)
+            x = self._max_pool(x, pool_size = 2)
 #        
 #        with tf.name_scope('Conv_Block_2'):
 #            x = self._conv_batch_relu(x, filters = self._filters[2], \
@@ -69,6 +69,7 @@ class VGG16(model_base.CNN_Base):
 #            x = self._fully_connected(x, 4096)
             x = self._fully_connected(x, self._num_classes)
         
+        histogram = {'Logits': x}
 #==============================================================================
 # Small dense work for test purpose
 #         with tf.name_scope('Fully_Connected'):
@@ -77,7 +78,7 @@ class VGG16(model_base.CNN_Base):
 #             x = self._fully_connected(x, 200)
 #             x = self._fully_connected(x, self._num_classes)
 #==============================================================================
-        return x
+        return x, histogram
         
 
 if __name__ == "__main__":

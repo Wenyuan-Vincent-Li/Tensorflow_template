@@ -46,3 +46,4 @@ __pycache__
 *.icloud
 *.ipynb_checkpoints/
 *.h5
+*log

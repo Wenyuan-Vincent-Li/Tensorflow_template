@@ -87,10 +87,10 @@ class ProstateDataSet(object):
 #                       3 * self.config.BATCH_SIZE, \
 #                       count = self.config.EPOCHS))
 #==============================================================================
-#        dataset = dataset.shuffle(buffer_size = \
-#                       self.config.MIN_QUEUE_EXAMPLES + \
-#                       3 * self.config.BATCH_SIZE, \
-#                       )
+        dataset = dataset.shuffle(buffer_size = \
+                       self.config.MIN_QUEUE_EXAMPLES + \
+                       3 * self.config.BATCH_SIZE, \
+                       )
         dataset = dataset.repeat(1)    
         return dataset
     
