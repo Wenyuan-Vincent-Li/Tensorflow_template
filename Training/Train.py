@@ -12,13 +12,16 @@ sys.path.append(os.path.dirname(os.getcwd()))
 import tensorflow as tf
 from train_base import Train_base
 from Inputpipeline.ProstateDataSet import ProstateDataSet as DataSet
+from Training.Saver import Saver
 from Training.Summary import Summary
 import Training.utils as utils
 
 class Train(Train_base):
-    def __init__(self, config, log_dir, **kwargs):
+    def __init__(self, config, log_dir, save_dir, **kwargs):
         super(Train, self).__init__(config.LEARNING_RATE, config.MOMENTUM)
         self.config = config
+        self.save_dir = save_dir
+        self.comments = kwargs.get('comments', '')
         if self.config.SUMMARY:
             if self.config.SUMMARY_TRAIN_VAL:
                 self.summary_train = Summary(log_dir, config, log_type = 'train', \
@@ -58,21 +61,35 @@ class Train(Train_base):
                     summary_dict_train['image'] = image 
                 if self.config.SUMMARY_HISTOGRAM:
                     histogram ['Conv_Block_0_Weight'] = \
-                        [var for var in tf.global_variables() if var.name=='conv2d/kernel:0'][0]
+                        [var for var in tf.global_variables() \
+                         if var.name=='conv2d/kernel:0'][0]
                     histogram = utils.grads_dict(grads, histogram)
                     summary_dict_train['histogram'] = histogram
-                merged_summary_train = self.summary_train.add_summary(summary_dict_train)
-                merged_summary_val = self.summary_val.add_summary(summary_dict_val)
-                                
+                merged_summary_train = \
+                self.summary_train.add_summary(summary_dict_train)
+                merged_summary_val = \
+                self.summary_val.add_summary(summary_dict_val)
+        
+        # Add saver                        
+        saver = Saver(self.save_dir)
+        
         with tf.Session() as sess:
             if self.config.SUMMARY and self.config.SUMMARY_GRAPH:
                 if self.config.SUMMARY_TRAIN_VAL:
                     self.summary_train._graph_summary(sess.graph)
             
-            init_var = tf.group(tf.global_variables_initializer(), \
-                         tf.local_variables_initializer())
-            sess.run(init_var)
-            for epoch in range(self.config.EPOCHS):
+            if self.config.RESTORE:
+                start_epoch = saver.restore(sess)
+            else:
+                # Create a new folder for saving model
+                saver.set_save_path(comments = self.comments)
+                start_epoch = 0
+                # initialize the variables
+                init_var = tf.group(tf.global_variables_initializer(), \
+                             tf.local_variables_initializer())
+                sess.run(init_var)
+            
+            for epoch in range(1, self.config.EPOCHS + 1):
                 sess.run(init_op_train)
                 while True:
                     try:        
@@ -92,16 +109,26 @@ class Train(Train_base):
                             sess.run([loss, accuracy, update_op, merged_summary_val])
                         loss_val.append(loss_out)
                     except tf.errors.OutOfRangeError:
-                        tf.logging.info("The current loss for epoch {} is {:.2f}, accuracy is {:.2f}."\
+                        tf.logging.info("The current validation loss for epoch {} is {:.2f}, accuracy is {:.2f}."\
                               .format(epoch, np.mean(loss_val), accuracy_out))
                         break
                 if self.config.SUMMARY_TRAIN_VAL:
                     self.summary_val.summary_writer.add_summary(summary_out, epoch)
+                
+                # Save the model per SAVE_PER_EPOCH
+                if epoch % self.config.SAVE_PER_EPOCH == 0:
+                    save_name = str(epoch + start_epoch)
+                    saver.save(sess, 'model_' + save_name.zfill(4) \
+                               + '.ckpt')                    
+                
             if self.config.SUMMARY_TRAIN_VAL:
                 self.summary_train.summary_writer.flush()
                 self.summary_train.summary_writer.close()
                 self.summary_val.summary_writer.flush()
                 self.summary_val.summary_writer.close()
+            # Save the model after all epochs
+            save_name = str(epoch + start_epoch)
+            saver.save(sess, 'model_' + save_name.zfill(4) + '.ckpt')
         return
     
     
@@ -195,7 +222,8 @@ if __name__=="__main__":
     
     config = TestConfig    
     log_dir = os.path.join(os.getcwd(),"log")
+    save_dir = os.path.join(os.getcwd(), "weight")
     comments = 'This is a summary test'
-    training = Train(config, log_dir, comments = comments)
+    training = Train(config, log_dir, save_dir, comments = comments)
     loss = training.train(model)
     

@@ -47,3 +47,4 @@ __pycache__
 *.ipynb_checkpoints/
 *.h5
 *log
+*weight
