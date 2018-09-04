@@ -20,6 +20,9 @@ def _int64_feature(value):
 def _bytes_feature(value):
   return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
+def _float_feature(value):
+  return tf.train.Feature(float_list=tf.train.FloatList(value=value))
+
 def _image_channel_mean(image, accumulated_mean):
     '''
     Compute the accumulated channel mean
@@ -48,6 +51,23 @@ def image_2_tfrecord(image_label_filename_pairs, tfrecords_filename):
             record_writer.write(example.SerializeToString())
         channel_mean = accumulated_mean / len(image_label_filename_pairs)
         ## TODO: deal with channel_mean (save it in csv file)
+
+def csv_2_TF(csv_data, tf_filename):
+  '''
+  A function that conver csv_data to tfrecord.
+  Note that the csv_data is reqired to have the format:
+  label, feature 0, feature 1, ... , feature n.
+  '''
+  with tf.python_io.TFRecordWriter(tf_filename) as writer:
+    for row in csv_data:
+      # file format : label, feature 0, feature 1, ... , feature n.
+      label, features = int(row[0]), row[1:].tolist()
+      example = tf.train.Example(features=tf.train.Features(
+                feature={
+                    'attribute': _float_feature(features),
+                    'label': _int64_feature(label)
+                    }))
+      writer.write(example.SerializeToString())
             
 def main_image_2_tfrecord():
     '''
