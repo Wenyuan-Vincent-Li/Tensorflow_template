@@ -5,7 +5,16 @@ Created on Fri May 18 16:04:53 2018
 
 @author: wenyuan
 """
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import tensorflow as tf
+from tensorflow.python.framework import tensor_shape
+from tensorflow.python.layers import base
+from tensorflow.python.layers import core as core_layers
+from tensorflow.python.ops import init_ops
+from tensorflow.python.ops import nn_impl
 
 class CNN_Base(object):
     def __init__(self, is_training, data_format, batch_norm_decay = 0.999,
