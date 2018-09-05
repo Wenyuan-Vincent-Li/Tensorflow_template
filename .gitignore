@@ -41,7 +41,6 @@ Thumbs.db
 Dataset/Images/
 Dataset/Labels/
 Dataset/Tfrecord/
-Test*
 __pycache__
 *.icloud
 *.ipynb_checkpoints/
