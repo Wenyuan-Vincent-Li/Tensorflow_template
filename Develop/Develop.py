@@ -3,6 +3,8 @@ import os, sys
 sys.path.append(os.path.dirname(os.getcwd()))
 import tensorflow as tf
 from Develop.develop_base import Develop_base
+
+
 # import the dataset module
 
 class Develop(Develop_base):
@@ -59,6 +61,12 @@ class Develop(Develop_base):
         """
         pass
 
+    def _severing_API(self):
+        """
+        TODO: severing the api using the framework
+        :return:
+        """
+        pass
 
 def _main_freeze_model():
     tf.logging.set_verbosity(tf.logging.INFO)
@@ -72,6 +80,7 @@ def _main_freeze_model():
 
 if __name__ == '__main__':
     import os
+
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # disable all debugging logs
     tf.logging.set_verbosity(tf.logging.INFO)
     from config import Config
