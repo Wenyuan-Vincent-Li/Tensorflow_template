@@ -36,11 +36,14 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+*test*
+
 
 # My specific folders and files#
 Dataset/Images/
 Dataset/Labels/
 Dataset/Tfrecord/
+.idea
 __pycache__
 *.icloud
 *.ipynb_checkpoints/
