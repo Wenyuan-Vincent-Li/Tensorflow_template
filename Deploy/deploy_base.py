@@ -1,5 +1,5 @@
 '''
-This is a develop base function upon which the Develop.py was built upon.
+This is a develop base function upon which the Deploy.py was built upon.
 '''
 import sys
 import os
@@ -8,7 +8,7 @@ sys.path.append('/home/cdsw')
 import tensorflow as tf
 
 
-class Develop_base(object):
+class Deploy_base(object):
     def __init__(self, model_path, save_path):
         self.model_path = model_path
         self.save_path = save_path
@@ -80,8 +80,8 @@ class Develop_base(object):
 
 
 if __name__ == '__main__':
-    model_path = "Develop/FinalModel/model"
-    save_path = "Develop/ModelWrapper"
+    model_path = "Deploy/FinalModel/model"
+    save_path = "Deploy/ModelWrapper"
     develop = Develop_base(model_path, save_path)
     graph = develop._load_frozen_model()
     #  for op in graph.get_operations():

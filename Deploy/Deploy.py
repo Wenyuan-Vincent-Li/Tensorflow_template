@@ -2,12 +2,12 @@ import os, sys
 
 sys.path.append(os.path.dirname(os.getcwd()))
 import tensorflow as tf
-from Develop.develop_base import Develop_base
+from Deploy.deploy_base import Deploy_base
 
 
 # import the dataset module
 
-class Develop(Develop_base):
+class Deploy(Deploy_base):
     def __init__(self, model_path, save_path, **kwargs):
         super(Develop, self).__init__(model_path, save_path)
 
@@ -71,8 +71,8 @@ class Develop(Develop_base):
 def _main_freeze_model():
     tf.logging.set_verbosity(tf.logging.INFO)
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Disable all debugging logs
-    model_path = "Develop/FinalModel/model"
-    save_path = "Develop/ModelWrapper"
+    model_path = "Deploy/FinalModel/model"
+    save_path = "Deploy/ModelWrapper"
     develop = Develop(model_path, save_path)
     develop.extend_meta_graph()
     develop.freeze_model()
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     # Create a global configuration object
     tmp_config = TempConfig()
 
-    model_path = "Develop/FinalModel/model"
-    save_path = "Develop/ModelWrapper"
+    model_path = "Deploy/FinalModel/model"
+    save_path = "Deploy/ModelWrapper"
     develop = Develop(model_path, save_path)
     develop.use_frozen_model(tmp_config)
