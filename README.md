@@ -46,13 +46,11 @@ Other folders and files are:
     that specific for the dataset.
 2. __Inputpipeline:__
     * __ProstateDataSet.py:__ creates a dataset object. It should be modified to your
-    own dataset. A typical data input pipeline includes:  
-        1. read in the data;
-        2. parser the data;
-        3. preprocessing the data;
-        4. shuffle and repeat the data;
-        5. batch the data up;
-        6. make the data iterator.
+    own dataset. A typical data input pipeline includes: read in the data, parser the data,
+     preprocessing the data, shuffle and repeat the data, batch the data up, 
+     make the data iterator.
+    * __inputpipeline.py:__ provides some functions that can be used in the 
+    data input pipeline.
     * __input_source.py:__ shows several example that tensorflow can use for data
     input, such as input from numpy, input from numpy as placeholder, input from 
     tfrecord, etc.
@@ -114,17 +112,29 @@ Other folders and files are:
         return x
     ``` 
 4. __Training:__
+    * __Saver.py:__
+    * __Summary.py:__
+    * __train_base.py:__
+    * __Train.py:__
+    * __utils.py:__
 
 5. __Testing:__
 
 6. __Deploy:__
 
-#### Examples of using the template
+#### Examples of using this template
 
 
 #### Useful Links:
 [TensorFlow: A proposal of good practices for files, folders and models architecture](
 https://blog.metaflow.fr/tensorflow-a-proposal-of-good-practices-for-files-folders-and-models-architecture-f23171501ae3
 )
+
+[Mastering markdown in GitHub](https://guides.github.com/features/mastering-markdown/)
+
 ###### TODO LIST:
++ Combine all the utils files together;
++ Figure out how to feed the input data to frozen model
++ Using the trained model to serve the API
+
  
