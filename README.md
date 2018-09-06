@@ -46,7 +46,13 @@ Other folders and files are:
     that specific for the dataset.
 2. __Inputpipeline:__
     * __ProstateDataSet.py:__ creates a dataset object. It should be modified to your
-    own dataset.
+    own dataset. A typical data input pipeline includes:  
+        1. read in the data;
+        2. parser the data;
+        3. preprocessing the data;
+        4. shuffle and repeat the data;
+        5. batch the data up;
+        6. make the data iterator.
     * __input_source.py:__ shows several example that tensorflow can use for data
     input, such as input from numpy, input from numpy as placeholder, input from 
     tfrecord, etc.
@@ -58,8 +64,6 @@ Other folders and files are:
         dataset = tf.data.Dataset.from_tensor_slices(
                 {"input": image,
                  "target": label})
-        ## TODO: Input from filenames and create an iterator: not commonly used
-        ## for large dataset
         return dataset
     
     def input_from_numpy_as_placeholder(image, label):
@@ -78,7 +82,8 @@ Other folders and files are:
 
 3. __Model:__
     * __model_base.py:__ provides a series of building blocks that you might
-use in your NN, such as relu, leakyrelu, fully_connected layer etc. 
+    use in your NN, such as relu, leakyrelu, fully_connected layer etc. The
+    model_base object will be inherited by the main NN model.
     ```python
     def _relu(self, x):
         return tf.nn.relu(x)
@@ -89,6 +94,25 @@ use in your NN, such as relu, leakyrelu, fully_connected layer etc.
             f2 = 0.5 * (1 - leak)
         return f1 * x + f2 * tf.abs(x)
     ```
+    * __VGG_16.py:__ constructs the main model. A forward_pass method should be
+    implemented within this object.
+    ```python
+    def forward_pass(self, x):
+        with tf.name_scope('Conv_Block_0'):
+            x = self._conv_batch_relu(x, filters = self._filters[0], \
+                                  kernel_size = 3, strides = (1,1))
+            x = self._max_pool(x, pool_size = 2)
+        
+        with tf.name_scope('Conv_Block_1'):
+            x = self._conv_batch_relu(x, filters = self._filters[1], \
+                                  kernel_size = 3, strides = (1,1))
+                
+        with tf.name_scope('Fully_Connected'):
+            with tf.name_scope('Tensor_Flatten'):
+                x = tf.reshape(x, shape = [self._batch_size, -1])
+            x = self._fully_connected(x, self._num_classes)
+        return x
+    ``` 
 4. __Training:__
 
 5. __Testing:__
