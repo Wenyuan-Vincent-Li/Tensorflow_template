@@ -112,17 +112,32 @@ Other folders and files are:
         return x
     ``` 
 4. __Training:__
-    * __Saver.py:__
-    * __Summary.py:__
-    * __train_base.py:__
-    * __Train.py:__
-    * __utils.py:__
+    * __Saver.py:__ creates a saver object that save and restore training weights
+    in tensorflow.
+    * __Summary.py:__ creates a summary object that store the data in the training
+    process. Data including scalar, image, histogram, graph, etc. can be utilized
+    by tenorboard.
+    * __train_base.py:__ a base function that can be inherited by Train.py.
+    This base function includes different optimizer, metrics, etc. 
+    * __Train.py:__ a main function that trains the model. 
+    * __utils.py:__ utility function that being used by other training functions.
 
 5. __Testing:__
+    * __eval_base.py:__ a base function that can be inherited by Evaler.py.
+    This base function includes different metrics, etc.
+    * __Evaler.py:__ a main function that evaluates the model.
+    * __utils.py:__ utility functions that being used by other evaluation 
+    functions.
 
 6. __Deploy:__
+    * __deploy_base.py:__ a base function that can be inherited by Deploy.py.
+    This base function includes import_meta_graph, extend_meta_graph, freeze_mode,
+    etc.
+    * __Deploy.py:__ a main function that deploys the model.
+    * __utils.py:__ utility functions that being used by other deploy 
+    functions.
 
-#### Examples of using this template
+#### Examples of using this template:
 
 
 #### Useful links:
@@ -135,6 +150,6 @@ https://blog.metaflow.fr/tensorflow-a-proposal-of-good-practices-for-files-folde
 ###### TODO LIST:
 + Combine all the utils files together;
 + Figure out how to feed the input data to frozen model
-+ Using the trained model to serve the API
++ Using the trained model to serve API
 
  
