@@ -30,14 +30,12 @@ You can convert your dataset to tfrecord in it.
 
 Other folders and files are:
 * __Plots:__ folder that stores pics
-* __README file:__ most of the people are probably using Github, 
-so please take some times and write a good markdown.
+* __README file:__  Github markdown.
 * __.gitignore:__ used for customize the content for git synchronization.
 
 ## More Details
 3. __Model:__
-
-⋅⋅* __model_base.py:__ provides a series of building blocks that you might
+    * __model_base.py:__ provides a series of building blocks that you might
 use in your NN, such as relu, leakyrelu, fully_connected layer etc. 
 ```python
 def _relu(self, x):
