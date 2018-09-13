@@ -134,13 +134,15 @@ Other folders and files are:
     This base function includes import_meta_graph, extend_meta_graph, freeze_mode,
     etc.
     * __Deploy.py:__ a main function that deploys the model.
-    * __utils.py:__ utility functions that being used by other deploy 
-    functions.
+    * __construct_deploy_model.py:__ construct the model for production use. Put placeholder
+    as an input interface.
+    * __model_inspect.py:__ functions that can be used to inspect your trained ckpt file. 
 
 #### Examples of using this template:
 
 
 #### Useful links:
+
 [TensorFlow: A proposal of good practices for files, folders and models architecture](
 https://blog.metaflow.fr/tensorflow-a-proposal-of-good-practices-for-files-folders-and-models-architecture-f23171501ae3
 )
@@ -148,8 +150,6 @@ https://blog.metaflow.fr/tensorflow-a-proposal-of-good-practices-for-files-folde
 [Mastering markdown in GitHub](https://guides.github.com/features/mastering-markdown/)
 
 ###### TODO LIST:
-+ Combine all the utils files together;
-+ Figure out how to feed the input data to frozen model
-+ Using the trained model to serve API
++ Combine all the utils files together
 
  
